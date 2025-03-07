@@ -1,0 +1,671 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 17.2
+-- Dumped by pg_dump version 17.2
+
+-- Started on 2025-02-20 20:31:43
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 218 (class 1259 OID 17350)
+-- Name: gurukul; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.gurukul (
+    gid integer NOT NULL,
+    gname character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.gurukul OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 17349)
+-- Name: gurukul_gid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.gurukul_gid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.gurukul_gid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4988 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: gurukul_gid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.gurukul_gid_seq OWNED BY public.gurukul.gid;
+
+
+--
+-- TOC entry 220 (class 1259 OID 17357)
+-- Name: gurukul_offerings; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.gurukul_offerings (
+    oid integer NOT NULL,
+    gid integer,
+    gtype character varying(8),
+    CONSTRAINT gurukul_offerings_gtype_check CHECK (((gtype)::text = ANY ((ARRAY['G1'::character varying, 'G2'::character varying, 'G3'::character varying, 'G4'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.gurukul_offerings OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 17356)
+-- Name: gurukul_offerings_oid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.gurukul_offerings_oid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.gurukul_offerings_oid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4989 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: gurukul_offerings_oid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.gurukul_offerings_oid_seq OWNED BY public.gurukul_offerings.oid;
+
+
+--
+-- TOC entry 234 (class 1259 OID 17433)
+-- Name: journey; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.journey (
+    jid integer NOT NULL,
+    subject_id integer,
+    topics_id integer,
+    lesson_id integer,
+    kroute integer
+);
+
+
+ALTER TABLE public.journey OWNER TO postgres;
+
+--
+-- TOC entry 233 (class 1259 OID 17432)
+-- Name: journey_jid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.journey_jid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.journey_jid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4990 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: journey_jid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.journey_jid_seq OWNED BY public.journey.jid;
+
+
+--
+-- TOC entry 232 (class 1259 OID 17424)
+-- Name: kitems; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.kitems (
+    kid integer NOT NULL,
+    ktype public.media NOT NULL,
+    kurl character varying(255) NOT NULL,
+    kdesc character varying(255),
+    kexp public.kexptype NOT NULL
+);
+
+
+ALTER TABLE public.kitems OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 17423)
+-- Name: kitems_kid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.kitems_kid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.kitems_kid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4991 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: kitems_kid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.kitems_kid_seq OWNED BY public.kitems.kid;
+
+
+--
+-- TOC entry 230 (class 1259 OID 17415)
+-- Name: kroutes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.kroutes (
+    krid integer NOT NULL,
+    kitems jsonb NOT NULL
+);
+
+
+ALTER TABLE public.kroutes OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 17414)
+-- Name: kroutes_krid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.kroutes_krid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.kroutes_krid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4992 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: kroutes_krid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.kroutes_krid_seq OWNED BY public.kroutes.krid;
+
+
+--
+-- TOC entry 228 (class 1259 OID 17403)
+-- Name: lessons; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.lessons (
+    lid integer NOT NULL,
+    tid integer,
+    lname character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.lessons OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 17402)
+-- Name: lessons_lid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.lessons_lid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.lessons_lid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4993 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: lessons_lid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.lessons_lid_seq OWNED BY public.lessons.lid;
+
+
+--
+-- TOC entry 222 (class 1259 OID 17370)
+-- Name: milestones; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.milestones (
+    mid integer NOT NULL,
+    gtype character varying(8),
+    class smallint,
+    level character varying(8),
+    CONSTRAINT milestones_gtype_check CHECK (((gtype)::text = ANY ((ARRAY['G1'::character varying, 'G2'::character varying, 'G3'::character varying, 'G4'::character varying])::text[]))),
+    CONSTRAINT milestones_level_check CHECK (((level)::text ~ similar_to_escape('L[1-9]|L1[0-2]'::text)))
+);
+
+
+ALTER TABLE public.milestones OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 17369)
+-- Name: milestones_mid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.milestones_mid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.milestones_mid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4994 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: milestones_mid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.milestones_mid_seq OWNED BY public.milestones.mid;
+
+
+--
+-- TOC entry 237 (class 1259 OID 17470)
+-- Name: sgurukul; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sgurukul (
+    sid integer,
+    gid integer,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    status character varying(255),
+    CONSTRAINT sgurukul_status_check CHECK (((status)::text = ANY ((ARRAY['Started'::character varying, 'In_progress'::character varying, 'Done'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.sgurukul OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 17498)
+-- Name: slog; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.slog (
+    sid integer,
+    jid integer,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    status character varying(255),
+    CONSTRAINT slog_status_check CHECK (((status)::text = ANY ((ARRAY['Started'::character varying, 'In_progress'::character varying, 'Done'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.slog OWNER TO postgres;
+
+--
+-- TOC entry 238 (class 1259 OID 17484)
+-- Name: smilestones; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.smilestones (
+    sid integer,
+    mid integer,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    status character varying(255),
+    CONSTRAINT smilestones_status_check CHECK (((status)::text = ANY ((ARRAY['Started'::character varying, 'In_progress'::character varying, 'Done'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.smilestones OWNER TO postgres;
+
+--
+-- TOC entry 236 (class 1259 OID 17460)
+-- Name: students; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.students (
+    sid integer NOT NULL,
+    sname character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    password_hash character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.students OWNER TO postgres;
+
+--
+-- TOC entry 235 (class 1259 OID 17459)
+-- Name: students_sid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.students_sid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.students_sid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4995 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: students_sid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.students_sid_seq OWNED BY public.students.sid;
+
+
+--
+-- TOC entry 224 (class 1259 OID 17379)
+-- Name: subjects; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.subjects (
+    subid integer NOT NULL,
+    subname character varying(255) NOT NULL,
+    jid integer
+);
+
+
+ALTER TABLE public.subjects OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 17378)
+-- Name: subjects_subid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.subjects_subid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.subjects_subid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4996 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: subjects_subid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.subjects_subid_seq OWNED BY public.subjects.subid;
+
+
+--
+-- TOC entry 242 (class 1259 OID 17524)
+-- Name: teacher_subjects; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.teacher_subjects (
+    teachid integer NOT NULL,
+    subid integer NOT NULL
+);
+
+
+ALTER TABLE public.teacher_subjects OWNER TO postgres;
+
+--
+-- TOC entry 241 (class 1259 OID 17513)
+-- Name: teachers; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.teachers (
+    teachid integer NOT NULL,
+    name character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    password_hash character varying(255) NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    last_login timestamp without time zone
+);
+
+
+ALTER TABLE public.teachers OWNER TO postgres;
+
+--
+-- TOC entry 240 (class 1259 OID 17512)
+-- Name: teachers_teachid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.teachers_teachid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.teachers_teachid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4997 (class 0 OID 0)
+-- Dependencies: 240
+-- Name: teachers_teachid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.teachers_teachid_seq OWNED BY public.teachers.teachid;
+
+
+--
+-- TOC entry 226 (class 1259 OID 17391)
+-- Name: topics; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.topics (
+    tid integer NOT NULL,
+    subid integer,
+    tname character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.topics OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 17390)
+-- Name: topics_tid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.topics_tid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.topics_tid_seq OWNER TO postgres;
+
+--
+-- TOC entry 4998 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: topics_tid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.topics_tid_seq OWNED BY public.topics.tid;
+
+
+--
+-- TOC entry 4750 (class 2604 OID 17353)
+-- Name: gurukul gid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.gurukul ALTER COLUMN gid SET DEFAULT nextval('public.gurukul_gid_seq'::regclass);
+
+
+--
+-- TOC entry 4751 (class 2604 OID 17360)
+-- Name: gurukul_offerings oid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.gurukul_offerings ALTER COLUMN oid SET DEFAULT nextval('public.gurukul_offerings_oid_seq'::regclass);
+
+
+--
+-- TOC entry 4758 (class 2604 OID 17436)
+-- Name: journey jid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.journey ALTER COLUMN jid SET DEFAULT nextval('public.journey_jid_seq'::regclass);
+
+
+--
+-- TOC entry 4757 (class 2604 OID 17427)
+-- Name: kitems kid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kitems ALTER COLUMN kid SET DEFAULT nextval('public.kitems_kid_seq'::regclass);
+
+
+--
+-- TOC entry 4756 (class 2604 OID 17418)
+-- Name: kroutes krid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kroutes ALTER COLUMN krid SET DEFAULT nextval('public.kroutes_krid_seq'::regclass);
+
+
+--
+-- TOC entry 4755 (class 2604 OID 17406)
+-- Name: lessons lid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.lessons ALTER COLUMN lid SET DEFAULT nextval('public.lessons_lid_seq'::regclass);
+
+
+--
+-- TOC entry 4752 (class 2604 OID 17373)
+-- Name: milestones mid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.milestones ALTER COLUMN mid SET DEFAULT nextval('public.milestones_mid_seq'::regclass);
+
+
+--
+-- TOC entry 4759 (class 2604 OID 17463)
+-- Name: students sid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.students ALTER COLUMN sid SET DEFAULT nextval('public.students_sid_seq'::regclass);
+
+
+--
+-- TOC entry 4753 (class 2604 OID 17382)
+-- Name: subjects subid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.subjects ALTER COLUMN subid SET DEFAULT nextval('public.subjects_subid_seq'::regclass);
+
+
+--
+-- TOC entry 4760 (class 2604 OID 17516)
+-- Name: teachers teachid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.teachers ALTER COLUMN teachid SET DEFAULT nextval('public.teachers_teachid_seq'::regclass);
+
+
+--
+-- TOC entry 4754 (class 2604 OID 17394)
+-- Name: topics tid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.topics ALTER COLUMN tid SET DEFAULT nextval('public.topics_tid_seq'::regclass);
+
+
+-- Completed on 2025-02-20 20:31:43
+
+--
+-- PostgreSQL database dump complete
+--
+
+Data for Kitems:
+
+-- Insert test kitems with correct column name (kexp)
+INSERT INTO kitems (kid, ktype, kexp, kurl, kdesc) 
+VALUES 
+  (1, 'video-url', 'hook', 'https://example.com/algebra-intro.mp4', 'Introduction to Algebra Video'),
+  (2, 'pdf', 'explanation', 'https://example.com/algebra-concepts.pdf', 'Basic Algebra Concepts'),
+  (3, 'text', 'verification', 'https://example.com/algebra-quiz.json', 'Algebra Practice Quiz');
+
+-- Create kroute with JSONB array
+INSERT INTO kroutes (krid, kitems) 
+VALUES 
+  (1, '[1, 2, 3]'::jsonb);
+
+-- Update journey
+UPDATE journey 
+SET kroute = 1,
+    topics_id = 1,
+    lesson_id = 101
+WHERE jid = 1;
+
+
+POSTMAN: http://localhost:3000/api/students/kitems?studentId=1&topicId=1&lessonId=101
+
+Response 200 OK:
+[
+    {
+        "kurl": "https://example.com/algebra-intro.mp4",
+        "kdesc": "Introduction to Algebra Video",
+        "progress": "in progress",
+        "isCompleted": false,
+        "isLocked": false
+    },
+    {
+        "kurl": "https://example.com/algebra-concepts.pdf",
+        "kdesc": "Basic Algebra Concepts",
+        "progress": "in progress",
+        "isCompleted": false,
+        "isLocked": false
+    },
+    {
+        "kurl": "https://example.com/algebra-quiz.json",
+        "kdesc": "Algebra Practice Quiz",
+        "progress": "in progress",
+        "isCompleted": false,
+        "isLocked": false
+    }
+]
+

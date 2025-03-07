@@ -1,0 +1,57 @@
+/App  
+
+
+  /Auth
+State: student {}
+
+	REQUEST /auth
+	RESPONSE {
+		studentId,
+		studentClass,
+		studentLevel,
+	}
+
+
+  
+  /Subjects
+
+	
+		State: topics []
+	REQUEST GET/topics?studentId=1&subjectId=science
+	RESPONSE [{
+		topicId,
+		topicName,
+		progress,
+		isCompleted,
+		isLocked
+	}]
+
+  /Lessons
+		State: lessons []
+	REQUEST GET/lessons?studentId=1&topicId=gravity
+	RESPONSE [{
+		lessonId,
+		lessonName,
+		progress,
+		interactionContext,
+		isCompleted,
+		isLocked
+	}]
+
+   /Lesson
+		State: kitem []
+		
+	REQUEST GET/kitems?studentId=1&topicId=gravity&lessonId=1
+	RESPONSE [{
+		kitemId,
+	kitemType:video_url | audio_url | text|pdf_url|,
+	kurl:
+	experienceType: hook | curiosity | explanation | verification,
+	progress,
+	isCompleted,
+	isLocked
+}]
+		
+	REQUEST POST/complete?studentId&kitemId=1
+	RESPONSE { 200 OK }
+		REDIRECT /Home
