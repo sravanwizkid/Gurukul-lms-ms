@@ -25,4 +25,7 @@ logs/
 
 # OS files
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Add these if not already present
+key.json 
