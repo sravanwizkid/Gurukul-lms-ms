@@ -3,8 +3,11 @@ name: Deploy to Cloud Run
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+
+# Add concurrency to cancel running workflows
+concurrency:
+  group: "deploy"
+  cancel-in-progress: true
 
 env:
   PROJECT_ID: gurukul-lms-ms
