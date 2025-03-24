@@ -32,9 +32,11 @@ const dbConfig = {
   })
 };
 
-console.log('Database config:', {
-  ...dbConfig,
-  password: '***',
+console.log('Database connection config:', {
+  host: dbConfig.host,
+  port: dbConfig.port,
+  database: dbConfig.database,
+  user: dbConfig.user,
   NODE_ENV: process.env.NODE_ENV
 });
 
