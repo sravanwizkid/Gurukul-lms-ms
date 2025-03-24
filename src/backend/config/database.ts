@@ -23,21 +23,23 @@ const dbConfig = {
   host: process.env.NODE_ENV === 'production' 
     ? '/cloudsql/gurukul-lms-ms:asia-south1:gurukul-postgres' 
     : process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
+  database: 'glms1',  // Hardcode for now
+  user: 'postgres',   // Hardcode for now
   password: process.env.DB_PASSWORD,
+  // Remove port for Unix socket connection in production
   ...(process.env.NODE_ENV !== 'production' && {
+    port: parseInt(process.env.DB_PORT || '5432'),
     ssl: { rejectUnauthorized: false }
   })
 };
 
-console.log('Database connection config:', {
+// Add more detailed logging
+console.log('Final database config:', {
   host: dbConfig.host,
-  port: dbConfig.port,
   database: dbConfig.database,
   user: dbConfig.user,
-  NODE_ENV: process.env.NODE_ENV
+  NODE_ENV: process.env.NODE_ENV,
+  hasPassword: !!dbConfig.password
 });
 
 // Create and export pool once
@@ -50,7 +52,11 @@ pool.connect()
     client.release();
   })
   .catch(err => {
-    logger.error('Database connection error:', err);
+    logger.error('Database connection error:', {
+      message: err.message,
+      code: err.code,
+      detail: (err as any).detail
+    });
   });
 
 // Log connection details (remove in production)
