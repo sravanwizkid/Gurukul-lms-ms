@@ -23,18 +23,18 @@ const dbConfig = {
   host: process.env.NODE_ENV === 'production' 
     ? '/cloudsql/gurukul-lms-ms:asia-south1:gurukul-postgres' 
     : process.env.DB_HOST,
-  database: 'glms1',  // Hardcode for now
-  user: 'postgres',   // Hardcode for now
-  password: process.env.DB_PASSWORD,
-  // Remove port for Unix socket connection in production
+  database: 'glms1',
+  user: 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres123',
+  // Only for non-production
   ...(process.env.NODE_ENV !== 'production' && {
     port: parseInt(process.env.DB_PORT || '5432'),
     ssl: { rejectUnauthorized: false }
   })
 };
 
-// Add more detailed logging
-console.log('Final database config:', {
+// Remove duplicate logging
+console.log('Database config:', {
   host: dbConfig.host,
   database: dbConfig.database,
   user: dbConfig.user,
