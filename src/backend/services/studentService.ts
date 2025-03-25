@@ -119,57 +119,28 @@ export const authenticate = async (authData: AuthRequest): Promise<AuthResponse>
   };
 };
 
-export const fetchSubjectsOrTopics = async (studentId: number, subjectId?: number): Promise<SubjectResponse[] | TopicResponse[]> => {
-  console.log('Starting fetchSubjectsOrTopics:', { studentId, subjectId });
-  
+export const fetchSubjectsOrTopics = async (studentId: number, subjectId?: number) => {
   try {
-    // 1. Get active journey
-    const journeyQuery = await pool.query<{ jid: number }>(
-      `SELECT jid 
-       FROM slog 
-       WHERE sid = $1 
-       AND status = 'In_progress' 
-       AND jid IS NOT NULL
-       ORDER BY starttime DESC 
-       LIMIT 1`,
-      [studentId]
-    );
-    console.log('Journey query results:', {
-      sql: journeyQuery.command,
-      params: [studentId],
-      count: journeyQuery.rowCount,
-      rows: journeyQuery.rows
-    });
+    console.log('Fetching subjects/topics:', { studentId, subjectId });
 
-    if (journeyQuery.rows.length === 0) {
-      throw new ApiError(404, 'No active journey found for the student');
+    if (subjectId) {
+      // Fixed topics query
+      const topicsQuery = await pool.query(
+        'SELECT t.tid as topicId, t.tname as topicName FROM topics t ' +
+        'JOIN subjects s ON t.subid = s.subid ' +  // Fixed join condition
+        'WHERE s.subid = $1',  // Fixed where clause
+        [subjectId]
+      );
+      console.log('Topics query result:', topicsQuery.rows);
+      return topicsQuery.rows;
+    } else {
+      // Subjects query
+      const subjectsQuery = await pool.query(
+        'SELECT s.subid as subjectId, s.subname as subjectName FROM subjects s'
+      );
+      console.log('Subjects query result:', subjectsQuery.rows);
+      return subjectsQuery.rows;
     }
-
-    const jid = journeyQuery.rows[0].jid;
-    console.log('Found journey ID:', jid);
-
-    // 3. Get subjects
-    const subjectsQuery = await pool.query<DBSubject>(
-      `SELECT s.subid, s.subname 
-       FROM journey j
-       JOIN subjects s ON j.subject_id = s.subid
-       WHERE j.jid = $1`,
-      [jid]
-    );
-    console.log('Subjects query results:', {
-      sql: subjectsQuery.command,
-      params: [jid],
-      count: subjectsQuery.rowCount,
-      rows: subjectsQuery.rows
-    });
-
-    const mappedResults = subjectsQuery.rows.map((subject: DBSubject) => ({
-      subjectId: subject.subid,
-      subjectName: subject.subname
-    }));
-    console.log('Mapped results:', mappedResults);
-
-    return mappedResults;
   } catch (error) {
     console.error('Error in fetchSubjectsOrTopics:', error);
     throw error;
