@@ -23,8 +23,9 @@ interface JWTPayload {
   gurukulType: string;
 }
 
-export const auth = (req: Request, res: Response, next: NextFunction) => {
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Add logging but keep existing functionality
     console.log('Auth middleware called:', {
       path: req.path,
       method: req.method,
@@ -32,17 +33,27 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
       authorization: req.headers.authorization
     });
 
-    const token = req.headers.authorization?.split(' ')[1];
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      console.log('No authorization header');
+      return res.status(401).json({ error: 'No authorization header' });
+    }
+
+    const token = authHeader.split(' ')[1];
     if (!token) {
       console.log('No token provided');
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    // Verify token
+    // Fix: Properly type the decoded token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
-    console.log('Token verified:', decoded);
+    if (typeof decoded === 'string') {
+      throw new Error('Invalid token format');
+    }
+    
+    req.user = decoded as JWTPayload;
+    console.log('Token verified:', req.user);
 
-    req.user = decoded;
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
