@@ -23,23 +23,29 @@ interface JWTPayload {
   gurukulType: string;
 }
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: 'No authorization header' });
-    }
+    console.log('Auth middleware called:', {
+      path: req.path,
+      method: req.method,
+      headers: req.headers,
+      authorization: req.headers.authorization
+    });
 
-    const token = authHeader.split(' ')[1];
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
+      console.log('No token provided');
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret') as JWTPayload;
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    console.log('Token verified:', decoded);
+
     req.user = decoded;
     next();
   } catch (error) {
-    console.error('Auth error:', error);
+    console.error('Auth middleware error:', error);
     res.status(401).json({ error: 'Invalid token' });
   }
 };

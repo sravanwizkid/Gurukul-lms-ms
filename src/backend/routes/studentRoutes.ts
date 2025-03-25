@@ -13,19 +13,8 @@ const router = express.Router();
 // Auth route
 router.post('/auth', authenticateStudent);
 
-// Subject/Topic routes - should be GET
-router.get('/subjects', auth, async (req: Request, res: Response) => {
-  try {
-    console.log('Full URL:', req.originalUrl);
-    console.log('Headers:', JSON.stringify(req.headers, null, 2));
-    console.log('Query params:', req.query);
-    
-    await getSubjectsOrTopics(req, res);
-  } catch (error) {
-    console.error('Error in /subjects:', error);
-    handleError(error, res);
-  }
-});
+// Subject/Topic routes
+router.get('/subjects', auth, getSubjectsOrTopics);
 
 // Lesson routes
 router.get('/lessons', auth, getLessons);

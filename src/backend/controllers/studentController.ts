@@ -41,6 +41,13 @@ export const authenticateStudent = async (req: Request, res: Response) => {
 
 export const getSubjectsOrTopics = async (req: Request, res: Response) => {
   try {
+    console.log('Subjects API called:', {
+      url: req.url,
+      method: req.method,
+      headers: req.headers,
+      query: req.query
+    });
+    
     const studentId = parseInt(req.query.studentId as string);
     const subjectId = req.query.subjectId ? parseInt(req.query.subjectId as string) : undefined;
     
