@@ -41,28 +41,21 @@ export const authenticateStudent = async (req: Request, res: Response) => {
 
 export const getSubjectsOrTopics = async (req: Request, res: Response) => {
   try {
-    console.log('Subjects API called:', {
-      url: req.url,
-      method: req.method,
-      headers: req.headers,
-      query: req.query
-    });
-    
     const studentId = parseInt(req.query.studentId as string);
     const subjectId = req.query.subjectId ? parseInt(req.query.subjectId as string) : undefined;
     
-    if (!studentId) {
-      return res.status(400).json({ error: 'Student ID is required' });
+    // Use path to determine if topics or subjects
+    const isTopicsRequest = req.path === '/topics';
+    
+    if (isTopicsRequest && !subjectId) {
+      return res.status(400).json({ error: 'Subject ID is required for topics' });
     }
 
-    const results = await fetchSubjectsOrTopics(studentId, subjectId);
+    const results = await fetchSubjectsOrTopics(studentId, isTopicsRequest ? subjectId : undefined);
     res.json(results);
   } catch (error) {
-    console.error('Error fetching subjects:', error);
-    res.status(500).json({ 
-      error: 'Internal server error', 
-      details: error instanceof Error ? error.message : 'Unknown error' 
-    });
+    console.error('Error fetching:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 

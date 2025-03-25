@@ -124,11 +124,11 @@ export const fetchSubjectsOrTopics = async (studentId: number, subjectId?: numbe
     console.log('Fetching subjects/topics:', { studentId, subjectId });
 
     if (subjectId) {
-      // Fixed topics query
+      // Fixed topics query with correct casing
       const topicsQuery = await pool.query(
-        'SELECT t.tid as topicId, t.tname as topicName FROM topics t ' +
-        'JOIN subjects s ON t.subid = s.subid ' +  // Fixed join condition
-        'WHERE s.subid = $1',  // Fixed where clause
+        'SELECT t.tid as "topicId", t.tname as "topicName" FROM topics t ' +
+        'JOIN subjects s ON t.subid = s.subid ' +
+        'WHERE s.subid = $1',
         [subjectId]
       );
       console.log('Topics query result:', topicsQuery.rows);

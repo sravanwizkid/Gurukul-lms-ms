@@ -13,8 +13,11 @@ const router = express.Router();
 // Auth route
 router.post('/auth', authenticateStudent);
 
-// Subject/Topic routes
+// Subjects route
 router.get('/subjects', auth, getSubjectsOrTopics);
+
+// New Topics route
+router.get('/topics', auth, getSubjectsOrTopics);
 
 // Lesson routes
 router.get('/lessons', auth, getLessons);
