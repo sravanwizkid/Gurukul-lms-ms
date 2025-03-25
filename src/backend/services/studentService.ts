@@ -44,7 +44,7 @@ export const authenticate = async (authData: AuthRequest): Promise<AuthResponse>
   }
 
   const student = studentQuery.rows[0];
-  const validPassword = authData.password === student.password_hash;  // Temporary
+  const validPassword = authData.password === student.password_hash;
   
   console.log('Password validation result:', validPassword);
 
@@ -98,7 +98,7 @@ export const authenticate = async (authData: AuthRequest): Promise<AuthResponse>
 
   const studentInfo = studentInfoQuery.rows[0];
 
-  // After successful authentication, generate token
+  // 3. Generate JWT token
   const token = jwt.sign(
     {
       studentId: student.sid,
@@ -107,9 +107,7 @@ export const authenticate = async (authData: AuthRequest): Promise<AuthResponse>
       gurukulType: studentInfo.gtype
     },
     process.env.JWT_SECRET || 'your_jwt_secret',
-    { 
-      expiresIn: '24h'
-    }
+    { expiresIn: '24h' }
   );
 
   return {

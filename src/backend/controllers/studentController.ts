@@ -25,7 +25,6 @@ export const authenticateStudent = async (req: Request, res: Response) => {
     };
     
     const authResponse = await authenticate(authData);
-    console.log('Authentication successful for:', req.body.email);
     res.json(authResponse);
   } catch (error) {
     console.error('Authentication error:', error);

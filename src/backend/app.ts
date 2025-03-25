@@ -14,6 +14,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root route for testing
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Server is running' });
+});
+
 // Health check endpoint with logging
 app.get('/_health', (req, res) => {
   console.log('Health check requested:', {
