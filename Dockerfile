@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y wget ca-certificates && rm -rf /var/lib
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --unsafe-perm=true
+RUN npm install
 
 # Install TypeScript globally
 RUN npm install -g typescript
@@ -44,5 +44,8 @@ RUN echo '/cloud_sql_proxy -instances=gurukul-lms-ms:asia-south1:gurukul-postgre
 # Expose port
 EXPOSE 3000
 
-# Start using the script
-CMD ["/app/startup.sh"]
+# Set environment variable
+ENV PORT=3000
+
+# Start the server
+CMD ["node", "dist/index.js"]

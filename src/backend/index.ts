@@ -1,22 +1,52 @@
-import dotenv from 'dotenv';
-import app from './app';
-import logger from './utils/logger';
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { studentRoutes } from './routes/student.routes';
+import { errorHandler } from './middleware/error.middleware';
+import { dbConfig } from './config/db.config';
 
-dotenv.config();
+const app = express();
+const port = process.env.PORT || 3000;
 
-// Convert PORT to number explicitly
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+// Middleware
+app.use(cors());
+app.use(helmet());
+app.use(express.json());
 
-const server = app.listen(port, '0.0.0.0', () => {
-  logger.info(`Server is running on port ${port}`);
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// Health check endpoint
+app.get('/_health', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString()
+  });
 });
 
-export default server;
+// Routes
+app.use('/api/students', studentRoutes);
+
+// Error handling
+app.use(errorHandler);
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+  console.log('Database connection established');
+});
+
+export default app;
 
 // Handle shutdown gracefully
 process.on('SIGTERM', () => {
-  logger.info('SIGTERM signal received: closing HTTP server');
-  server.close(() => {
-    logger.info('HTTP server closed');
+  console.log('SIGTERM signal received: closing HTTP server');
+  app.close(() => {
+    console.log('HTTP server closed');
   });
 }); 
