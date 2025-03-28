@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
- 
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -18,6 +18,47 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// Mock authentication endpoint
+app.post('/api/students/auth', (req, res) => {
+  res.json({
+    token: 'mock-token-12345',
+    studentId: 2
+  });
+});
+
+// Mock subjects endpoint
+app.get('/api/students/subjects', (req, res) => {
+  res.json([
+    { subjectId: 1, subjectName: 'Mathematics' }
+  ]);
+});
+
+// Mock topics endpoint
+app.get('/api/students/topics', (req, res) => {
+  res.json([
+    { topicId: 1, topicName: 'Algebra' }
+  ]);
+});
+
+// Mock lessons endpoint
+app.get('/api/students/lessons', (req, res) => {
+  res.json([
+    { lessonId: 101, lessonName: 'Introduction to Algebra', progress: 0 }
+  ]);
+});
+
+// Mock kitems endpoint
+app.get('/api/students/kitems', (req, res) => {
+  res.json([
+    { 
+      kitemId: 1,
+      kitemName: 'Basic Algebra Concepts',
+      kitemType: 'PDF',
+      progress: 0
+    }
+  ]);
+});
+
 // Health check endpoint
 app.get('/_health', (req, res) => {
   res.json({ 
@@ -25,7 +66,6 @@ app.get('/_health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-
 
 // Start server
 const server = app.listen(port, () => {
