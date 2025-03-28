@@ -2,10 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { studentRoutes } from './routes/student.routes';
-import { errorHandler } from './middleware/error.middleware';
-import { dbConfig } from './config/db.config';
-
+ 
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -29,11 +26,6 @@ app.get('/_health', (req, res) => {
   });
 });
 
-// Routes
-app.use('/api/students', studentRoutes);
-
-// Error handling
-app.use(errorHandler);
 
 // Start server
 const server = app.listen(port, () => {
