@@ -5,7 +5,9 @@ FROM node:18-slim
 WORKDIR /app
 
 # Install wget and ca-certificates
-RUN apt-get update && apt-get install -y wget ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y wget ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
@@ -23,7 +25,7 @@ COPY . .
 RUN npm run build
 
 # Remove dev dependencies
-RUN npm prune --production --unsafe-perm=true
+RUN npm prune --production
 
 # Create startup script
 RUN echo '#!/bin/sh' > /app/startup.sh && \
@@ -48,4 +50,4 @@ EXPOSE 3000
 ENV PORT=3000
 
 # Start the server
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/backend/index.js"]

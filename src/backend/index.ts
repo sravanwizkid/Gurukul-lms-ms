@@ -36,17 +36,17 @@ app.use('/api/students', studentRoutes);
 app.use(errorHandler);
 
 // Start server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
   console.log('Database connection established');
 });
 
-export default app;
+export default server;
 
 // Handle shutdown gracefully
 process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing HTTP server');
-  app.close(() => {
+  server.close(() => {
     console.log('HTTP server closed');
   });
 }); 
