@@ -58,10 +58,10 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: gcloud run deploy $SERVICE_NAME --image asia-south1-docker.pkg.dev/$PROJECT_ID/gurukul-repo/$SERVICE_NAME --platform managed --region $REGION --allow-unauthenticated --set-env-vars="PORT=3000" --timeout=300s --min-instances=0 --max-instances=4
-    - name: Clean up
-      if: always()
-      run: |
-        echo "Cleaning up resources..."
+
+      - name: Clean up
+        if: always()
+        run: echo "Cleaning up resources..."
 
   post-deploy-tests:
     needs: deploy
