@@ -42,10 +42,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Google Auth
+      - id: auth
+        name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
@@ -59,16 +60,7 @@ jobs:
           docker push asia-south1-docker.pkg.dev/$PROJECT_ID/gurukul-repo/$SERVICE_NAME
 
       - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy $SERVICE_NAME \
-          --image asia-south1-docker.pkg.dev/$PROJECT_ID/gurukul-repo/$SERVICE_NAME \
-          --platform managed \
-          --region $REGION \
-          --allow-unauthenticated \
-          --set-env-vars="PORT=3000" \
-          --timeout=300s \
-          --min-instances=0 \
-          --max-instances=4
+        run: gcloud run deploy $SERVICE_NAME --image asia-south1-docker.pkg.dev/$PROJECT_ID/gurukul-repo/$SERVICE_NAME --platform managed --region $REGION --allow-unauthenticated --set-env-vars="PORT=3000" --timeout=300s --min-instances=0 --max-instances=4
     - name: Clean up
       if: always()
       run: |
