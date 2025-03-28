@@ -1,7 +1,9 @@
-name: Deploy to  Cloud Run
+name: Deploy to Cloud Run
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 # Add concurrency to cancel running workflows
@@ -15,22 +17,27 @@ env:
   REGION: asia-south1
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-    - name: Install Dependencies
-      run: npm install
-    - name: Build TypeScript
-      run: npm run build
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Run API Tests
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+        run: npm run test:ci
 
   deploy:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     name: Deploy to Cloud Run
@@ -69,4 +76,24 @@ jobs:
     - name: Clean up
       if: always()
       run: |
-        echo "Cleaning up resources..." 
+        echo "Cleaning up resources..."
+
+  post-deploy-tests:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Run Post-Deploy Tests
+        env:
+          API_BASE_URL: ${{ secrets.CLOUD_RUN_URL }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+        run: npm test 
