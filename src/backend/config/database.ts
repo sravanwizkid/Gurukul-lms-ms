@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 
 const envPath = path.join(__dirname, '../../../.env');
 console.log('Looking for .env file at:', envPath);

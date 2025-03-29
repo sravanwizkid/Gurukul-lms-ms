@@ -3,7 +3,7 @@ import { ApiError } from '../middleware/errorHandler';
 import { AuthRequest } from '../types';
 import { authenticate, fetchSubjectsOrTopics, fetchLessons, fetchKItems } from '../services/studentService';
 import { pool } from '../config/database';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 
 export const authenticateStudent = async (req: Request, res: Response) => {
   try {
