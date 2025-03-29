@@ -20,6 +20,7 @@ app.use(limiter);
 
 // Mock authentication endpoint
 app.post('/api/students/auth', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
   res.json({
     token: 'mock-token-12345',
     studentId: 2
@@ -28,6 +29,7 @@ app.post('/api/students/auth', (req, res) => {
 
 // Mock subjects endpoint
 app.get('/api/students/subjects', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
   res.json([
     { subjectId: 1, subjectName: 'Mathematics' }
   ]);
@@ -35,6 +37,7 @@ app.get('/api/students/subjects', (req, res) => {
 
 // Mock topics endpoint
 app.get('/api/students/topics', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
   res.json([
     { topicId: 1, topicName: 'Algebra' }
   ]);
@@ -42,6 +45,7 @@ app.get('/api/students/topics', (req, res) => {
 
 // Mock lessons endpoint
 app.get('/api/students/lessons', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
   res.json([
     { lessonId: 101, lessonName: 'Introduction to Algebra', progress: 0 }
   ]);
@@ -49,6 +53,7 @@ app.get('/api/students/lessons', (req, res) => {
 
 // Mock kitems endpoint
 app.get('/api/students/kitems', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
   res.json([
     { 
       kitemId: 1,
@@ -61,6 +66,7 @@ app.get('/api/students/kitems', (req, res) => {
 
 // Health check endpoint
 app.get('/_health', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
   res.json({ 
     status: 'ok',
     timestamp: new Date().toISOString()
