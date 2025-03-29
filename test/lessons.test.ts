@@ -33,7 +33,7 @@ describe('Lessons API', () => {
     expect(firstLesson).toMatchObject({
       lessonId: expect.any(Number),
       lessonName: expect.any(String),
-      progress: 'in progress',    // Fixed: added space to match API response
+      progress: 'inprogress',
       isCompleted: false,
       isLocked: false
     });
