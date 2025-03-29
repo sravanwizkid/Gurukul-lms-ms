@@ -1,9 +1,9 @@
 module.exports = {
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  setupFiles: ['<rootDir>/test/setup.js'],
   testTimeout: 10000,
-  transform: {
-    '^.+\\.ts$': 'ts-jest'
-  },
-  moduleFileExtensions: ['ts', 'js', 'json']
+  setupFiles: ['<rootDir>/test/setup.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1'
+  }
 }; 
