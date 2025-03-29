@@ -31,21 +31,22 @@ describe('KItems API', () => {
     
     // Test first KItem with actual properties from API
     const firstKItem = response.body[0];
+    // First check basic properties
     expect(firstKItem).toMatchObject({
       kitemId: expect.any(Number),
-      kitemType: expect.any(String),
-      experienceType: expect.any(String),
-      kdesc: expect.any(String),
-      isCompleted: false,
-      isLocked: false
+      kitemType: expect.any(String)
     });
+    // Then check additional properties
+    expect(firstKItem.experienceType).toEqual(expect.any(String));
+    expect(firstKItem.kdesc).toEqual(expect.any(String));
+    expect(firstKItem.isCompleted).toBe(false);
+    expect(firstKItem.isLocked).toBe(false);
+    // Check progress value can be either 0 or "in progress"
+    expect([0, 'in progress']).toContain(firstKItem.progress);
 
     // Verify kurl exists and is either a string or empty
     expect(firstKItem).toHaveProperty('kurl');
     expect(typeof firstKItem.kurl === 'string' || firstKItem.kurl === '').toBeTruthy();
-
-    // Check progress separately to handle both number and string formats
-    expect(['in progress', 0]).toContain(firstKItem.progress);
 
     // Log success with details
     console.log('KItems verification passed:', {
