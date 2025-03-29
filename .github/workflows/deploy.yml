@@ -29,13 +29,19 @@ jobs:
       - name: Install Dependencies
         run: npm install
       
+      - name: Build
+        run: npm run build
+      
       - name: Run API Tests
         env:
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          API_BASE_URL: http://localhost:3000
+          TEST_USER_EMAIL: test@example.com
+          TEST_USER_PASSWORD: password123
           NODE_ENV: test
-        run: npm run test:ci
+        run: |
+          node dist/backend/index.js &
+          sleep 5  # Wait for server to start
+          npm run test:ci
 
   deploy:
     needs: test
