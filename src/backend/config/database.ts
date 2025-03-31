@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
 import { logger } from '../utils/logger';
@@ -45,18 +45,23 @@ console.log('Database config:', {
 // Create and export pool once
 export const pool = new Pool(dbConfig);
 
+// Define PostgreSQL error type
+interface PostgresError extends Error {
+  code?: string;
+}
+
 // Test database connection
 pool.connect()
-  .then(client => {
+  .then((client: PoolClient) => {
     logger.info('Database connected successfully');
     client.release();
   })
-  .catch(err => {
-    logger.error('Database connection error:', {
+  .catch((err: PostgresError) => {
+    logger.error('Error connecting to the database:', {
       message: err.message,
       code: err.code,
-      detail: (err as any).detail
     });
+    process.exit(1);
   });
 
 // Log connection details (remove in production)

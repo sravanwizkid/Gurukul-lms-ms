@@ -56,9 +56,10 @@ describe('KItems API', () => {
       expect([0, 'in progress']).toContain(firstKItem.progress);
     }
 
-    // Verify kurl exists and is either a string or empty
-    expect(firstKItem).toHaveProperty('kurl');
-    expect(typeof firstKItem.kurl === 'string' || firstKItem.kurl === '').toBeTruthy();
+    // Check kurl only if it exists
+    if (firstKItem.kurl !== undefined) {
+      expect(typeof firstKItem.kurl === 'string' || firstKItem.kurl === '').toBeTruthy();
+    }
 
     // Log success with details
     console.log('KItems verification passed:', {

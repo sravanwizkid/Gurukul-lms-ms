@@ -25,8 +25,8 @@ describe('Subjects API', () => {
 
     expect(Array.isArray(response.body)).toBeTruthy();
     if (response.body.length > 0) {
-      expect(response.body[0]).toHaveProperty('subjectid');
-      expect(response.body[0]).toHaveProperty('subjectname');
+      expect(response.body[0]).toHaveProperty('subjectId');
+      expect(response.body[0]).toHaveProperty('subjectName');
       
       // Log the response for verification
       console.log('Subject response:', response.body[0]);

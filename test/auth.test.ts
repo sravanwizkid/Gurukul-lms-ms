@@ -1,22 +1,20 @@
 import request from 'supertest';
-import dotenv from 'dotenv';
+import app from '../src/backend/index';
 import { getAuthToken } from './helpers/auth';
-
-dotenv.config();
-
-const baseURL = process.env.API_BASE_URL || 'https://gurukul-sm-api-b5xafjcvta-el.a.run.app';
 
 describe('Authentication', () => {
   it('should authenticate student and return token', async () => {
     const { token, studentId } = await getAuthToken();
-
-    expect(token).toBeDefined();
-    expect(studentId).toBeDefined();
     
-    // Show more detailed information
+    expect(token).toBeDefined();
+    expect(typeof token).toBe('string');
+    expect(token.length).toBeGreaterThan(0);
+    expect(studentId).toBeDefined();
+    expect(typeof studentId).toBe('number');
+    
     console.log('Authentication successful:', {
       studentId,
-      tokenPreview: token.substring(0, 20) + '...' // Shows first 20 chars of token
+      tokenPreview: token.substring(0, 15) + '...'
     });
   });
 }); 

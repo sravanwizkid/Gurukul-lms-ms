@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import { pool } from './config/database';
+import { authenticateStudent } from './services/studentServices';
+import { auth } from './middleware/auth';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,6 +14,12 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 
+// This middleware ensures all responses are JSON
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+  next();
+});
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -18,7 +27,6 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Mock authentication endpoint
 app.post('/api/students/auth', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.json({
