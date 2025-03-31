@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { pool } from './config/database';
-import { authenticateStudent } from './services/studentServices';
+import { authenticate } from './services/studentService';
 import { auth } from './middleware/auth';
 
 const app = express();
@@ -27,12 +27,16 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.post('/api/students/auth', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.json({
-    token: 'mock-token-12345',
-    studentId: 2
-  });
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const result = await authenticate({ 
+      email: req.body.email, 
+      password: req.body.password 
+    });
+    res.json(result);
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid credentials' });
+  }
 });
 
 // Mock subjects endpoint
