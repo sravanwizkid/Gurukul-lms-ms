@@ -52,16 +52,19 @@ interface PostgresError extends Error {
 
 // Test database connection
 pool.connect()
-  .then((client: PoolClient) => {
+  .then(client => {
     logger.info('Database connected successfully');
     client.release();
   })
-  .catch((err: PostgresError) => {
-    logger.error('Error connecting to the database:', {
+  .catch(err => {
+    logger.error('Database connection error:', {
       message: err.message,
       code: err.code,
     });
-    process.exit(1);
+    // Don't exit in test environment
+    if (process.env.NODE_ENV !== 'test') {
+      process.exit(1);
+    }
   });
 
 // Log connection details (remove in production)
