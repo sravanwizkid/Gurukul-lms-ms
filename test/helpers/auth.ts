@@ -10,8 +10,8 @@ export async function getAuthToken(): Promise<{ token: string; studentId: number
   const response = await request(app)
     .post('/api/auth/login')
     .send({
-      email: process.env.TEST_USER_EMAIL || 'test@example.com',
-      password: process.env.TEST_USER_PASSWORD || 'password123'
+      email: 'test@example.com',
+      password: 'test123'
     })
     .expect(200)
     .expect('Content-Type', /json/);
