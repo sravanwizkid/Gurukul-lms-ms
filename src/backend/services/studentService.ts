@@ -3,6 +3,7 @@ import { AuthRequest, AuthResponse, StudentAuth, StudentMilestone, SubjectRespon
 import { ApiError } from '../middleware/errorHandler';
 import { pool } from '../config/database';
 import jwt from 'jsonwebtoken';
+import { AuthData } from '../types/auth';
 
 interface DBTopic {
   tid: number;
@@ -27,7 +28,13 @@ interface DBKItem {
   kdesc: string;
 }
 
-export const authenticate = async (authData: AuthRequest): Promise<AuthResponse> => {
+const getStudentByEmail = async (email: string) => {
+  const query = 'SELECT * FROM students WHERE email = $1';
+  const result = await pool.query(query, [email]);
+  return result.rows[0];
+};
+
+export const authenticateStudent = async (authData: AuthData): Promise<AuthResponse> => {
   try {
     const student = await getStudentByEmail(authData.email);
     console.log('Auth attempt:', {
@@ -38,14 +45,14 @@ export const authenticate = async (authData: AuthRequest): Promise<AuthResponse>
     });
 
     if (!student) {
-      return { success: false, message: 'Student not found' };
+      return { success: false, message: 'Student not found' } as AuthResponse;
     }
 
     const validPassword = authData.password === student.password_hash;
     console.log('Password validation:', { validPassword });
 
     if (!validPassword) {
-      return { success: false, message: 'Invalid password' };
+      return { success: false, message: 'Invalid password' } as AuthResponse;
     }
 
     // 2. Check if Student is in a Gurukul
