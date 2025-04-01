@@ -28,95 +28,94 @@ interface DBKItem {
 }
 
 export const authenticate = async (authData: AuthRequest): Promise<AuthResponse> => {
-  console.log('Attempting authentication for email:', authData.email);
-  
-  // 1. Validate Student Credentials
-  const studentQuery = await pool.query<StudentAuth>(
-    'SELECT sid, password_hash FROM students WHERE email = $1',
-    [authData.email]
-  );
+  try {
+    const student = await getStudentByEmail(authData.email);
+    console.log('Auth attempt:', {
+      email: authData.email,
+      foundStudent: !!student,
+      providedPass: authData.password,
+      storedHash: student?.password_hash
+    });
 
-  console.log('Student query result rows:', studentQuery.rowCount);
+    if (!student) {
+      return { success: false, message: 'Student not found' };
+    }
 
-  if (studentQuery.rows.length === 0) {
-    console.log('No student found with email:', authData.email);
-    throw new ApiError(401, 'Invalid credentials');
-  }
+    const validPassword = authData.password === student.password_hash;
+    console.log('Password validation:', { validPassword });
 
-  const student = studentQuery.rows[0];
-  const validPassword = authData.password === student.password_hash;
-  
-  console.log('Password validation result:', validPassword);
+    if (!validPassword) {
+      return { success: false, message: 'Invalid password' };
+    }
 
-  if (!validPassword) {
-    console.log('Invalid password for student:', authData.email);
-    throw new ApiError(401, 'Invalid credentials');
-  }
+    // 2. Check if Student is in a Gurukul
+    const gurukulQuery = await pool.query(
+      'SELECT gid FROM sgurukul WHERE sid = $1 AND status IN (\'Started\', \'In_progress\')',
+      [student.sid]
+    );
+    console.log('Gurukul query results:', {
+      count: gurukulQuery.rowCount,
+      rows: gurukulQuery.rows
+    });
 
-  // 2. Check if Student is in a Gurukul
-  const gurukulQuery = await pool.query(
-    'SELECT gid FROM sgurukul WHERE sid = $1 AND status IN (\'Started\', \'In_progress\')',
-    [student.sid]
-  );
-  console.log('Gurukul query results:', {
-    count: gurukulQuery.rowCount,
-    rows: gurukulQuery.rows
-  });
+    if (gurukulQuery.rows.length === 0) {
+      throw new ApiError(404, 'Student not part of any active Gurukul');
+    }
 
-  if (gurukulQuery.rows.length === 0) {
-    throw new ApiError(404, 'Student not part of any active Gurukul');
-  }
+    // 3. Get the Milestone ID
+    const milestoneQuery = await pool.query(
+      'SELECT mid FROM smilestones WHERE sid = $1 AND status IN (\'Started\', \'In_progress\') AND mid IS NOT NULL',
+      [student.sid]
+    );
+    console.log('Milestone query results:', {
+      count: milestoneQuery.rowCount,
+      rows: milestoneQuery.rows
+    });
 
-  // 3. Get the Milestone ID
-  const milestoneQuery = await pool.query(
-    'SELECT mid FROM smilestones WHERE sid = $1 AND status IN (\'Started\', \'In_progress\') AND mid IS NOT NULL',
-    [student.sid]
-  );
-  console.log('Milestone query results:', {
-    count: milestoneQuery.rowCount,
-    rows: milestoneQuery.rows
-  });
+    if (milestoneQuery.rows.length === 0) {
+      throw new ApiError(404, 'No active milestone found for student');
+    }
 
-  if (milestoneQuery.rows.length === 0) {
-    throw new ApiError(404, 'No active milestone found for student');
-  }
+    // 4. Fetch Class, Level, and Gurukul Type
+    const studentInfoQuery = await pool.query<StudentMilestone>(
+      'SELECT gtype, class, level FROM milestones WHERE mid = $1',
+      [milestoneQuery.rows[0].mid]
+    );
+    console.log('Student info query results:', {
+      count: studentInfoQuery.rowCount,
+      rows: studentInfoQuery.rows,
+      mid: milestoneQuery.rows[0].mid
+    });
 
-  // 4. Fetch Class, Level, and Gurukul Type
-  const studentInfoQuery = await pool.query<StudentMilestone>(
-    'SELECT gtype, class, level FROM milestones WHERE mid = $1',
-    [milestoneQuery.rows[0].mid]
-  );
-  console.log('Student info query results:', {
-    count: studentInfoQuery.rowCount,
-    rows: studentInfoQuery.rows,
-    mid: milestoneQuery.rows[0].mid
-  });
+    if (studentInfoQuery.rows.length === 0) {
+      throw new ApiError(404, 'Student milestone information not found');
+    }
 
-  if (studentInfoQuery.rows.length === 0) {
-    throw new ApiError(404, 'Student milestone information not found');
-  }
+    const studentInfo = studentInfoQuery.rows[0];
 
-  const studentInfo = studentInfoQuery.rows[0];
+    // 3. Generate JWT token
+    const token = jwt.sign(
+      {
+        studentId: student.sid,
+        studentClass: studentInfo.class,
+        studentLevel: studentInfo.level,
+        gurukulType: studentInfo.gtype
+      },
+      process.env.JWT_SECRET || 'your_jwt_secret',
+      { expiresIn: '24h' }
+    );
 
-  // 3. Generate JWT token
-  const token = jwt.sign(
-    {
+    return {
       studentId: student.sid,
       studentClass: studentInfo.class,
       studentLevel: studentInfo.level,
-      gurukulType: studentInfo.gtype
-    },
-    process.env.JWT_SECRET || 'your_jwt_secret',
-    { expiresIn: '24h' }
-  );
-
-  return {
-    studentId: student.sid,
-    studentClass: studentInfo.class,
-    studentLevel: studentInfo.level,
-    gurukulType: studentInfo.gtype,
-    token
-  };
+      gurukulType: studentInfo.gtype,
+      token
+    };
+  } catch (error) {
+    console.error('Error in authenticate:', error);
+    throw error;
+  }
 };
 
 export const fetchSubjectsOrTopics = async (studentId: number, subjectId?: number) => {

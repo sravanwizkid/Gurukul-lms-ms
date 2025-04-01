@@ -7,6 +7,11 @@ import path from 'path';
 dotenv.config({ path: path.join(__dirname, '../../.env.test') });
 
 export async function getAuthToken(): Promise<{ token: string; studentId: number }> {
+  console.log('Attempting login with:', {
+    email: 'test@example.com',
+    password: 'test123'
+  });
+
   const response = await request(app)
     .post('/api/auth/login')
     .send({
