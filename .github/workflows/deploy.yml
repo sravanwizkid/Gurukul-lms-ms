@@ -98,6 +98,23 @@ jobs:
           --min-instances=0 \
           --max-instances=4
 
+      - name: Setup Test Database
+        run: |
+          PGPASSWORD=postgres123 psql -h localhost -U postgres -d glms1 -c "
+          -- Create tables if they don't exist
+          CREATE TABLE IF NOT EXISTS students (
+            sid SERIAL PRIMARY KEY,
+            sname VARCHAR(255),
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL
+          );
+
+          -- Insert test user if not exists
+          INSERT INTO students (sid, sname, email, password_hash) 
+          VALUES (2, 'Test Student', 'test@example.com', 'test123')
+          ON CONFLICT (email) DO NOTHING;
+          "
+
       - name: Clean up
         if: always()
         run: echo "Cleaning up resources..."
