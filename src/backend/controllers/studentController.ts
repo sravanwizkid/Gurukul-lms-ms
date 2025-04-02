@@ -7,35 +7,47 @@ import { logger } from '../utils/logger';
 
 export const authenticateStudent = async (req: Request, res: Response) => {
   try {
-    console.log('Authentication request received:', {
-      body: req.body,
-      headers: req.headers['content-type']
+    // Validate request body
+    if (!req.body || !req.body.email || !req.body.password) {
+      console.log('Invalid request body:', {
+        hasBody: !!req.body,
+        hasEmail: !!req.body?.email,
+        hasPassword: !!req.body?.password
+      });
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['email', 'password']
+      });
+    }
+
+    console.log('Auth attempt for:', req.body.email);
+
+    const result = await authenticate({ 
+      email: req.body.email, 
+      password: req.body.password 
     });
 
-    if (!req.body.email || !req.body.password) {
-      return res.status(400).json({ 
-        error: 'Missing email or password',
-        receivedBody: req.body 
+    if (!result || !result.token) {
+      console.log('Auth failed:', {
+        email: req.body.email,
+        reason: 'Invalid credentials'
+      });
+      return res.status(401).json({ 
+        error: 'Authentication failed' 
       });
     }
 
-    const authData: AuthRequest = {
+    console.log('Auth successful:', {
       email: req.body.email,
-      password: req.body.password
-    };
-    
-    const authResponse = await authenticate(authData);
-    res.json(authResponse);
+      hasToken: true
+    });
+
+    return res.status(200).json(result);
   } catch (error) {
-    console.error('Authentication error:', error);
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json({ error: error.message });
-    } else {
-      res.status(500).json({ 
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
+    console.error('Auth error:', error);
+    return res.status(500).json({ 
+      error: 'Internal server error' 
+    });
   }
 };
 
@@ -125,4 +137,6 @@ export const getStudentById = async (req: Request, res: Response) => {
     logger.error('Error fetching student:', error);
     return res.status(500).json({ message: 'Error fetching student' });
   }
-}; 
+};
+
+// Check if rate limiting is here 
