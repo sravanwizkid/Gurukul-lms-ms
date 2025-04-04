@@ -21,26 +21,27 @@ console.log('Loading environment variables:', {
 // Debug connection config
 const dbConfig = {
   host: process.env.NODE_ENV === 'production' 
-    ? '/cloudsql/gurukul-lms-ms:asia-south1:gurukul-postgres' 
+    ? `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`
     : process.env.DB_HOST,
-  database: 'glms1',
-  user: 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres123',
-  // Only for non-production
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  // Remove port for production as it uses Unix socket
   ...(process.env.NODE_ENV !== 'production' && {
-    port: parseInt(process.env.DB_PORT || '5432'),
-    ssl: { rejectUnauthorized: false }
+    port: Number(process.env.DB_PORT)
   })
 };
 
-// Remove duplicate logging
-console.log('Database config:', {
-  host: dbConfig.host,
-  database: dbConfig.database,
-  user: dbConfig.user,
-  NODE_ENV: process.env.NODE_ENV,
-  hasPassword: !!dbConfig.password
-});
+// Remove excessive logging in production
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Database config:', {
+    host: dbConfig.host,
+    database: dbConfig.database,
+    user: dbConfig.user,
+    NODE_ENV: process.env.NODE_ENV,
+    hasPassword: !!dbConfig.password
+  });
+}
 
 // Create and export pool once
 export const pool = new Pool(dbConfig);
@@ -92,4 +93,6 @@ export const query = async (text: string, params?: any[]) => {
     console.error('Database query error:', error);
     throw error;
   }
-}; 
+};
+
+// Verify connection settings 

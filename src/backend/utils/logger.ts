@@ -1,21 +1,21 @@
-import winston from 'winston';
+// Cloud Run structured logging
+const cloudLogger = {
+  info: (message: string, data?: any) => {
+    console.log('INFO:', message, data ? JSON.stringify(data) : '');
+  },
 
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
-  ]
-});
+  error: (message: string, error?: any) => {
+    console.error('ERROR:', message, error ? JSON.stringify(error) : '');
+  },
 
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple()
-  }));
-}
+  request: (req: any) => {
+    console.log('REQUEST:', {
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      headers: req.headers
+    });
+  }
+};
 
-export default logger; 
+export default cloudLogger; 

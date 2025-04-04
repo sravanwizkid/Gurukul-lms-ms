@@ -28,4 +28,8 @@ logs/
 Thumbs.db
 
 # Add these if not already present
-key.json 
+key.json
+
+# Don't ignore these files
+!.gcloudignore
+!app.yaml 

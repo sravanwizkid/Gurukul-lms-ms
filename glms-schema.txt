@@ -1,3 +1,42 @@
+## database/
+├── schema/
+│   └── SMAPI-schema-v1.sql    # Schema with clean setup
+├── data/
+│   └── SMAPI-data-v1.sql      # Data with disabled triggers
+└── README.md                   # Instructions for setup
+
+## Database Setup
+
+## Prerequisites
+- PostgreSQL 14 or higher
+- psql command-line tool
+
+## Setup Steps
+1. Create database:
+   ```sql
+   CREATE DATABASE glms1;
+   ```
+
+2. Import schema:
+   ```bash
+   psql -U postgres -d glms1 -f schema/SMAPI-schema-v1.sql
+   ```
+
+3. Import data:
+   ```bash
+   psql -U postgres -d glms1 -f data/SMAPI-data-v1.sql
+   ```
+
+## Environment Setup
+Create `.env` file with:
+env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=glms1
+DB_USER=postgres
+DB_PASSWORD=your_password
+##
+
 --
 -- PostgreSQL database dump
 --
