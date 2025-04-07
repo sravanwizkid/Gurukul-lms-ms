@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import { AuthRequest, AuthResponse, StudentAuth, StudentMilestone, SubjectResponse, TopicResponse, LessonResponse, Lesson, KItemResponse, KItem, MediaType } from '../types';
-import { ApiError } from '../middleware/errorHandler';
+import { ApiError } from '../middlewares/errorHandler';
 import { pool } from '../config/database';
 import jwt from 'jsonwebtoken';
 

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { ApiError } from '../middleware/errorHandler';
+import { ApiError } from './errorHandler';
 
 // Extend Request type to include user information
 declare global {

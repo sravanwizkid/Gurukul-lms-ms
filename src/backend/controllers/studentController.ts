@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ApiError } from '../middleware/errorHandler';
+import { ApiError } from '../middlewares/errorHandler';
 import { AuthRequest } from '../types';
 import { authenticate, fetchSubjectsOrTopics, fetchLessons, fetchKItems } from '../services/studentService';
 import { pool } from '../config/database';
@@ -28,14 +28,14 @@ export const authenticateStudent = async (req: Request, res: Response) => {
     res.json(authResponse);
   } catch (error) {
     console.error('Authentication error:', error);
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json({ error: error.message });
-    } else {
-      res.status(500).json({ 
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      });
+    if (error instanceof Error) {
+      console.error('Error:', error.message);
+      if ('statusCode' in error) {
+        return res.status((error as ApiError).statusCode).json({ error: error.message });
+      }
+      return res.status(500).json({ error: error.message });
     }
+    return res.status(500).json({ error: 'An unknown error occurred' });
   }
 };
 
