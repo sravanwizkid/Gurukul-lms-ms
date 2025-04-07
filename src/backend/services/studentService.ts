@@ -1,8 +1,9 @@
 import { Pool } from 'pg';
 import { AuthRequest, AuthResponse, StudentAuth, StudentMilestone, SubjectResponse, TopicResponse, LessonResponse, Lesson, KItemResponse, KItem, MediaType } from '../types';
-import { ApiError } from '../middleware/errorHandler';
+import { ApiError } from '../middlewares/errorHandler';
 import { pool } from '../config/database';
 import jwt from 'jsonwebtoken';
+import { logger } from '../utils/logger';
 
 interface DBTopic {
   tid: number;
@@ -27,6 +28,7 @@ interface DBKItem {
   kdesc: string;
 }
 
+// Helper function to get student by email
 const getStudentByEmail = async (email: string) => {
   const query = 'SELECT * FROM students WHERE email = $1';
   const result = await pool.query(query, [email]);

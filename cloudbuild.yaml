@@ -1,25 +1,25 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-south1-docker.pkg.dev/gurukul-lms-ms/gurukul-repo/gurukul-sm-api', '.']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/gurukul-lms-ms/studentmate-repo/studentmate-api', '.']
   # Push the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-south1-docker.pkg.dev/gurukul-lms-ms/gurukul-repo/gurukul-sm-api']
+    args: ['push', 'us-central1-docker.pkg.dev/gurukul-lms-ms/studentmate-repo/studentmate-api']
   # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
     - 'run'
     - 'deploy'
-    - 'gurukul-sm-api'
+    - 'studentmate-api'
     - '--image'
-    - 'asia-south1-docker.pkg.dev/gurukul-lms-ms/gurukul-repo/gurukul-sm-api'
+    - 'us-central1-docker.pkg.dev/gurukul-lms-ms/studentmate-repo/studentmate-api'
     - '--region'
-    - 'asia-south1'
+    - 'us-central1'
     - '--platform'
     - 'managed'
     - '--allow-unauthenticated'
     - '--project'
     - 'gurukul-lms-ms'
 images:
-  - 'asia-south1-docker.pkg.dev/gurukul-lms-ms/gurukul-repo/gurukul-sm-api' 
+  - 'us-central1-docker.pkg.dev/gurukul-lms-ms/studentmate-repo/studentmate-api' 

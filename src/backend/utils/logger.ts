@@ -1,17 +1,26 @@
+// Simple structured logger for Cloud Run
 export const logger = {
-  info: (message: string, ...args: any[]) => {
-    if (process.env.NODE_ENV !== 'test') {
-      console.log(message, ...args);
-    }
+  info: (message: string, data?: any) => {
+    console.log(JSON.stringify({
+      severity: 'INFO',
+      message,
+      data
+    }));
   },
-  error: (message: string, ...args: any[]) => {
-    if (process.env.NODE_ENV !== 'test') {
-      console.error(message, ...args);
-    }
+
+  error: (message: string, error?: any) => {
+    console.error(JSON.stringify({
+      severity: 'ERROR',
+      message,
+      error: error instanceof Error ? error.message : error
+    }));
   },
-  warn: (message: string, ...args: any[]) => {
-    if (process.env.NODE_ENV !== 'test') {
-      console.warn(message, ...args);
-    }
+
+  warn: (message: string, data?: any) => {
+    console.warn(JSON.stringify({
+      severity: 'WARNING',
+      message,
+      data
+    }));
   }
-}; 
+};

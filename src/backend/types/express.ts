@@ -1,22 +1,2 @@
-export interface RouterLayer {
-  name: string;
-  route?: {
-    path: string;
-    methods: {
-      [key: string]: boolean;
-    };
-  };
-  handle: {
-    stack: RouterLayer[];
-  };
-}
-
-export interface StudentRoute {
-  route?: {
-    path: string;
-    methods: {
-      [key: string]: boolean;
-    };
-  };
-  stack: RouterLayer[];
-} 
+// Types are already defined in authMiddleware.ts
+// This file can be safely removed if it's duplicate 

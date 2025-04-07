@@ -18,7 +18,12 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  logger.error('Error:', err);
+  logger.error('Error:', {
+    name: err.name,
+    message: err.message,
+    path: req.path,
+    method: req.method
+  });
 
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({ error: err.message });
