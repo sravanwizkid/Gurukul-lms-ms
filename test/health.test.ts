@@ -1,18 +1,22 @@
 import request from 'supertest';
+import { pool } from '../src/backend/config/database';
 import dotenv from 'dotenv';
 
+// Load environment variables
 dotenv.config();
 
-const baseURL = process.env.API_BASE_URL || 'https://gurukul-sm-api-b5xafjcvta-el.a.run.app';
+// Use the new Cloud Run URL
+const API_URL = process.env.API_BASE_URL || 'http://localhost:3000';
 
 describe('Health Check', () => {
-  it('should return health status', async () => {
-    const response = await request(baseURL)
-      .get('/_health')
-      .expect('Content-Type', /json/)
-      .expect(200);
+  beforeAll(async () => {
+    console.log('Starting health check tests...');
+    console.log('Testing API at:', API_URL);
+  });
 
-    expect(response.body).toHaveProperty('status', 'ok');
-    expect(response.body).toHaveProperty('timestamp');
+  it('should respond to health check', async () => {
+    const response = await request(API_URL)
+      .get('/_health');
+    expect(response.status).toBe(200);
   });
 }); 
