@@ -1,4 +1,35 @@
 steps:
+  # Install dependencies and run tests
+  - name: 'node:18-slim'
+    entrypoint: npm
+    args: ['ci']
+    env:
+      - 'NODE_ENV=test'
+      - 'API_BASE_URL=https://studentmate-api-995034495677.us-central1.run.app'
+      - 'TEST_USER_EMAIL=test@example.com'
+      - 'TEST_USER_PASSWORD=test123'
+      - 'DB_HOST=34.100.243.104'
+      - 'DB_PORT=5432'
+      - 'DB_NAME=glms1'
+      - 'DB_USER=postgres'
+      - 'DB_PASSWORD=postgres123'
+      - 'JWT_SECRET=your_jwt_secret'
+
+  - name: 'node:18-slim'
+    entrypoint: npm
+    args: ['test', 'test/index.test.ts']
+    env:
+      - 'NODE_ENV=test'
+      - 'API_BASE_URL=https://studentmate-api-995034495677.us-central1.run.app'
+      - 'TEST_USER_EMAIL=test@example.com'
+      - 'TEST_USER_PASSWORD=test123'
+      - 'DB_HOST=34.100.243.104'
+      - 'DB_PORT=5432'
+      - 'DB_NAME=glms1'
+      - 'DB_USER=postgres'
+      - 'DB_PASSWORD=postgres123'
+      - 'JWT_SECRET=your_jwt_secret'
+
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-central1-docker.pkg.dev/gurukul-lms-ms/studentmate-repo/studentmate-api', '.']
